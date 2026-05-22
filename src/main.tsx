@@ -5,16 +5,9 @@ import { DominoThemeProviderDecorator } from "@domino/base-components";
 import "./index.css";
 import App from "./App.tsx";
 
-function useStaticStore() {
-  return {
-    formattedPrincipal: undefined,
-    whiteLabelSettings: undefined,
-  };
-}
-
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <DominoThemeProviderDecorator useStoreHook={useStaticStore}>
+    <DominoThemeProviderDecorator>
       <HashRouter>
         <App />
       </HashRouter>
