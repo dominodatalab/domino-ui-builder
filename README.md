@@ -1,73 +1,48 @@
-# React + TypeScript + Vite
+# domino-ui-builder
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A Vite + React 18 + TypeScript seed project preconfigured with Domino's design-system component library (`@domino/base-components`) and a Storybook MCP server that lets Claude Code look up verified component APIs on demand.
 
-Currently, two official plugins are available:
+Clone it, run `npm install`, and ask Claude to start composing screens.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Getting started
 
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+That's it. The app at `src/App.tsx` already imports `Button`, `Card`, `IconResolver`, `Space`, and `Typography` from `@domino/base-components` as a starting example. Edit it and Claude can take over from there.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### Scripts
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- `npm run dev` — start the Vite dev server
+- `npm run build` — typecheck (`tsc -b`) and produce a production build
+- `npm run lint` — ESLint
+- `npm run preview` — preview the production build
+
+## How the Domino pieces are wired
+
+- **`@domino/base-components`** is installed from the local tarball `domino-base-components-v1.0.0.tgz` via a `file:` dependency in `package.json`. No private registry access needed.
+- **`src/main.tsx`** wraps the app in `DominoThemeProviderDecorator` (the required theme provider) and `HashRouter` from `react-router-dom` v5. React Router 5 is a peer dependency of the library.
+- Imports are named, from the root of the package:
+  ```tsx
+  import { Button, Modal, IconResolver } from '@domino/base-components';
+  ```
+
+By default `DominoThemeProviderDecorator` tries to fetch user and white-label data from the Domino backend. For standalone use outside the Domino platform, pass a static `useStoreHook` — see the package README at `node_modules/@domino/base-components/README.md` for the pattern.
+
+## Working with Claude
+
+The project ships a **Storybook MCP server** for Claude Code, configured in `.mcp.json` and pointing at the live Storybook (https://main--60c0de3f60dd96003bdcb1a1.chromatic.com/mcp). `.claude/settings.local.json` already enables the server and allows `mcp__storybook` tools.
+
+Through that server, Claude can call:
+
+- `list-all-documentation` — enumerate every documented component
+- `get-documentation` — retrieve full props, usage examples, and stories for a component
+- `get-documentation-for-story` — fetch a specific story variant
+
+Ask Claude for a component by name (Button, DominoTable, Modal, DominoForm, …) and it will look up the verified API through the MCP rather than guessing.
+
+## Storybook
+
+The live component library is browsable at https://main--60c0de3f60dd96003bdcb1a1.chromatic.com/.
