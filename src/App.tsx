@@ -4,9 +4,14 @@ import {
   IconResolver,
   Space,
   Typography,
+  useGetThemeValue,
 } from "@domino/base-components";
 
 export default function App() {
+  // Resolve visual values through tokens — see CLAUDE.md "Design system rules".
+  const background = useGetThemeValue("palette.bgLight1");
+  const padding = useGetThemeValue("spacing.large");
+
   return (
     <div
       style={{
@@ -14,8 +19,8 @@ export default function App() {
         justifyContent: "center",
         alignItems: "center",
         minHeight: "100vh",
-        padding: 24,
-        background: "#fafbfc",
+        padding,
+        background,
       }}
     >
       <div style={{ maxWidth: 520, width: "100%" }}>
